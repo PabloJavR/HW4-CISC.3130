@@ -1,0 +1,54 @@
+--- 1. Build the playlist ---
+true
+true
+true
+true
+true
+true
+duplicate s3: false
+playlist: [Night Drive, Slow Tide, Copper Sky, Static Bloom, Low Orbit, Glass Rivers]
+--- 2. Look up songs ---
+find s4: Static Bloom
+find s9: null
+--- 3. Play and move forward ---
+play s1: Night Drive
+play s9: null
+next: Slow Tide
+next: Copper Sky
+history: [Slow Tide, Night Drive]
+--- 4. Up next ---
+true
+true
+true
+queue s9: false
+up next: [Night Drive, Low Orbit, Glass Rivers]
+next: Night Drive
+now playing: Night Drive
+history: [Copper Sky, Slow Tide, Night Drive]
+--- 5. Back button ---
+back: Copper Sky
+up next: [Night Drive, Low Orbit, Glass Rivers]
+history: [Slow Tide, Night Drive]
+--- 6. Remove songs ---
+remove s5: true
+remove current (s3): false
+remove s9: false
+playlist: [Night Drive, Slow Tide, Copper Sky, Static Bloom, Glass Rivers]
+up next: [Night Drive, Glass Rivers]
+--- 7. Removed songs are skipped ---
+next: Night Drive
+next: Glass Rivers
+next at end: null
+now playing: Glass Rivers
+back: Night Drive
+up next: [Glass Rivers]
+--- 8. Play counts ---
+s1: 4
+s3: 2
+s6: 1
+s5 (removed): 0
+--- 9. Empty player ---
+next: null
+back: null
+now playing: null
+playlist: []

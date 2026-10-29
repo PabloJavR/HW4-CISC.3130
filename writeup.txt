@@ -1,0 +1,51 @@
+MUSIC PLAYER WRITE-UP (Java)
+Due: 11/28/26 · Points: 100 (+10 extra credit) · Work: Individual
+
+Build/reuse choices: I built the playlist (doubly linked list), up next
+(deque on a doubly linked list) and history (stack on a linked list). I reused
+HashMap for the library (id -> playlist node) and for play counts (id -> count).
+It's important to note that because I built the deque and stack from linked
+nodes, every operation below costs what the ideal structure would cost.
+
+PART A: BIG-O TABLE
+(n = songs in the playlist. "Amortized" means a removed song is skipped at
+most once per time it was queued or played, so the skipping work is paid for
+by earlier queue and play calls.)
+
+Method        | Structures it touches            | Big-O          | Reason
+--------------|----------------------------------|----------------|-----------------------------------------------
+addSong       | playlist, library                | O(1)           | Add at the tail and do one HashMap set.
+findSong      | library                          | O(1)           | One HashMap lookup by id.
+play          | library, history, play counts    | O(1)           | HashMap lookup, stack push, one count update.
+queueLater    | library, up next                 | O(1)           | HashMap check, then deque addBack.
+queueNext     | library, up next                 | O(1)           | HashMap check, then deque addFront.
+next          | up next, library, playlist,      | O(1) amortized | Take deque front, HashMap check, follow node.after,
+              | history, play counts             |                | push. Skipped removed songs were paid for earlier.
+back          | history, up next, library,       | O(1) amortized | Pop stack, HashMap check, deque addFront.
+              | play counts                      |                | Skipped removed songs were paid for earlier.
+removeSong    | library, playlist, play counts   | O(1)           | HashMap gives the node, so unlink with before/after.
+showPlaylist  | playlist                         | O(n)           | Has to walk and list every node.
+
+PART B: DEFEND TWO CHOICES
+
+1. Playlist (doubly linked list) with the library map storing nodes
+In the player, the playlist keeps the songs in order and lets me move to the
+song after the current one. The library map stores each song's node, not just
+the song, so removeSong and "next" are both O(1) because I look up the node
+and then use node.before and node.after. In truth, a plain array would be
+slower and harder, since removing a song means finding it and shifting
+everything after it, which is O(n), and a saved index goes stale after every
+removal. Since I built the list myself, I get the true O(1) cost. However the
+price is writing the four removal cases (only node, first, last, middle) and
+keeping first and last correct by hand.
+
+2. Up next (deque)
+Up next is the list of songs waiting to play, so it needs to add at the front
+with queueNext, add at the back with queueLater and take from the front with
+next. A deque makes all three O(1) because it works at both ends. If I swapped
+it for a plain array or ArrayList, adding at the front and taking from the
+front would be O(n) since every element has to shift, so queueNext and next
+would slow down as the queue grows. Java's built-in ArrayDeque would also give
+O(1) at both ends, so building my own does not make it faster. In truth the
+cost of building it is writing and testing the pointer code myself (first,
+last, addFront, addBack, takeFront), and the payoff is full control of the nodes.
